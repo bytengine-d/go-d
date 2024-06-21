@@ -49,6 +49,13 @@ func Get(ctx context.Context, key string) (any, bool) {
 	return nil, false
 }
 
+func Remove(ctx context.Context, key string) {
+	space, ok := GetSpace(ctx)
+	if ok {
+		space.Remove(key)
+	}
+}
+
 // endregion
 
 // region GetXXX helper function
