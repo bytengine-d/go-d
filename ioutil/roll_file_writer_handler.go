@@ -1,10 +1,13 @@
 package ioutil
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"errors"
 	"fmt"
 	"github.com/bantenio/d/event"
 	"github.com/bantenio/d/lang"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -24,9 +27,21 @@ const (
 	RollDayFileEventFileChange = "_roll_day_file_event_file_change"
 )
 
+const (
+	RollDayFileDatetimeYearMonthDayFormat = "2006-01-02"
+)
+
 type RollDayFileOption func(wrapper *WrapperWriter, ep *event.EventGroup) error
 
-func DefaultRollDay(outFilePath string, datetimeFormat string) WrapperWriterHandler {
+func DefaultRollDay(outFilePath string) WrapperWriterHandler {
+	return RollDayFileWriterHandler(outFilePath,
+		RollDayFileCheckTime,
+		RollDayFileMoveFileName(RollDayFileDatetimeYearMonthDayFormat),
+		RollDayFileCompress,
+		RollDayFileSetupFileWriter)
+}
+
+func RollDayWithDatetimeFormat(outFilePath, datetimeFormat string) WrapperWriterHandler {
 	return RollDayFileWriterHandler(outFilePath,
 		RollDayFileCheckTime,
 		RollDayFileMoveFileName(datetimeFormat),
@@ -145,13 +160,51 @@ func RollDayFileCompress(wrapper *WrapperWriter, ep *event.EventGroup) error {
 }
 
 func rollDayFileCompress(wrapper *WrapperWriter, targetFileName string) error {
-	val, has := wrapper.Get(RollDayFileOriginFileAbsPath)
+	val, has := wrapper.Get(RollDayFileOriginDir)
 	if !has {
 		return errors.New("out file name not found.")
 	}
-	_ = val.(string)
-	// TODO implementing compress old file
+	dir := val.(string)
+	fileBaseName := path.Base(targetFileName)
+	targetGzFileName := path.Join(dir, fileBaseName+".tar.gz")
+	f, err := os.Open(targetFileName)
+	if err != nil {
+		return errors.New("out file name not found.")
+	}
+	fi, err := os.Lstat(targetFileName)
+	if err != nil {
+		return errors.New("out file name not found.")
+	}
+	err = fileToTarGz(f, fi, targetGzFileName)
+	if err != nil {
+		return errors.New("out file name not found.")
+	}
 	return os.Remove(targetFileName)
+}
+
+func fileToTarGz(file *os.File, info os.FileInfo, fileName string) error {
+	tarFile, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, os.FileMode(0644))
+	if err != nil {
+		return err
+	}
+	defer tarFile.Close()
+	zr := gzip.NewWriter(tarFile)
+	defer zr.Close()
+	tw := tar.NewWriter(zr)
+	defer tw.Close()
+	header, err := tar.FileInfoHeader(info, file.Name())
+	if err != nil {
+		return err
+	}
+	err = tw.WriteHeader(header)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(tw, file)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func RollDayFileCheckTime(wrapper *WrapperWriter, ep *event.EventGroup) error {
