@@ -91,11 +91,11 @@ func obtainFileInfo(outFilePath string) (*time.Time, string, string, string, str
 	if err != nil {
 		return nil, "", "", "", "", "", err
 	}
-	originFileName := outFileInfo.Name()
-	absOutFilePath, err := filepath.Abs(originFileName)
+	absOutFilePath, err := filepath.Abs(outFilePath)
 	if err != nil {
 		return nil, "", "", "", "", "", err
 	}
+	originFileName := outFileInfo.Name()
 	originFileBaseName := path.Base(originFileName)
 	originFileExt := path.Ext(originFileName)
 	originFileDir := path.Dir(absOutFilePath)

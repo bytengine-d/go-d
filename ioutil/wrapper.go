@@ -53,7 +53,7 @@ func NewWrapperWithStdio(ctx context.Context) *WrapperWriter {
 	}
 }
 
-func NewWrapperWithDelegate(ctx context.Context, writer io.Writer) *WrapperWriter {
+func NewWrapperWithNewWrapperWithDelegate(ctx context.Context, writer io.Writer) *WrapperWriter {
 	wrapper := &WrapperWriter{
 		delegate: writer,
 		ctx:      space.NewSpace(ctx, "WrapperWriterSpace"),
