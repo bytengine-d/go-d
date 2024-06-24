@@ -73,6 +73,8 @@ func RollDayFileWriterHandler(outFilePath string, options ...RollDayFileOption) 
 		now := time.Now()
 		if createdAt.Day() != now.Day() {
 			ep.Publish(RollDayFileEventDayChange)
+		} else if err = rollDayFileSetupFileWriter(wrapper); err != nil {
+			return err
 		}
 		return nil
 	}
