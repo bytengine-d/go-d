@@ -14,15 +14,15 @@ func timespecToTime(timespec syscall.Timespec) time.Time {
 
 func FileCreateTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Stat_t)
-	return timespecToTime(fileAttr.Ctimespec)
+	return timespecToTime(fileAttr.Ctim)
 }
 
 func FileLastModifiedTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Stat_t)
-	return timespecToTime(fileAttr.Mtimespec)
+	return timespecToTime(fileAttr.Mtim)
 }
 
 func FileLastAccessTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Stat_t)
-	return timespecToTime(fileAttr.Atimespec)
+	return timespecToTime(fileAttr.Atim)
 }
