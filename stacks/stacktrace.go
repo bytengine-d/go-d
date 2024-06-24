@@ -1,8 +1,8 @@
 package stacks
 
 import (
-	"github.com/bantenio/d/buffer"
-	"github.com/bantenio/d/pool"
+	"github.com/bytengine-d/go-d/buffer"
+	"github.com/bytengine-d/go-d/pool"
 	"runtime"
 )
 

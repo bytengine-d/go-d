@@ -2,7 +2,7 @@ package ioutil
 
 import (
 	"context"
-	"github.com/bantenio/d/space"
+	"github.com/bytengine-d/go-d/space"
 	"io"
 	"os"
 )

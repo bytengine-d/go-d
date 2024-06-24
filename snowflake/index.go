@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/bantenio/d/lang"
+	"github.com/bytengine-d/go-d/lang"
 	"os"
 	"strconv"
 	"sync"

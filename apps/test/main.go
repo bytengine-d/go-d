@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/bantenio/d/lang"
+	"github.com/bytengine-d/go-d/lang"
 	"path"
 	"path/filepath"
 	"strings"

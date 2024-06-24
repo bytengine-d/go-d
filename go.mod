@@ -1,4 +1,4 @@
-module github.com/bantenio/d
+module github.com/bytengine-d/go-d
 
 go 1.22.3
 

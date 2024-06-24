@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"github.com/bantenio/d/pool"
+	"github.com/bytengine-d/go-d/pool"
 )
 
 // A Pool is a type-safe wrapper around a sync.Pool.

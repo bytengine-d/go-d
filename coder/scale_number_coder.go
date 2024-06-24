@@ -2,7 +2,7 @@ package coder
 
 import (
 	"encoding/binary"
-	"github.com/bantenio/d/lang"
+	"github.com/bytengine-d/go-d/lang"
 	"math"
 	"math/rand"
 	"strings"
