@@ -80,6 +80,14 @@ func RollDayFileWriterHandler(outFilePath string, options ...RollDayFileOption) 
 
 func obtainFileInfo(outFilePath string) (*time.Time, string, string, string, string, string, error) {
 	outFileInfo, err := lang.RealFileInfo(outFilePath)
+	if errors.Is(err, os.ErrNotExist) {
+		err = nil
+		_, err = os.Create(outFilePath)
+		if err != nil {
+			return nil, "", "", "", "", "", err
+		}
+		outFileInfo, err = lang.RealFileInfo(outFilePath)
+	}
 	if err != nil {
 		return nil, "", "", "", "", "", err
 	}
