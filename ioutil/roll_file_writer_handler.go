@@ -106,7 +106,7 @@ func obtainFileInfo(outFilePath string) (*time.Time, string, string, string, str
 }
 
 func RollDayFileSetupFileWriter(wrapper *WrapperWriter, ep *event.EventGroup) error {
-	return ep.RegisterAsyncSubscribe(RollDayFileEventFileChange, func() {
+	return ep.RegisterAsyncSubscribe(RollDayFileEventFileChange, func(_ string) {
 		_ = rollDayFileSetupFileWriter(wrapper)
 	})
 }
