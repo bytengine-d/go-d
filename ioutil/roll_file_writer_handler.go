@@ -84,6 +84,10 @@ func obtainFileInfo(outFilePath string) (*time.Time, string, string, string, str
 	outFileInfo, err := lang.RealFileInfo(outFilePath)
 	if errors.Is(err, os.ErrNotExist) {
 		err = nil
+		err = os.MkdirAll(path.Dir(outFilePath), 0755)
+		if err != nil {
+			return nil, "", "", "", "", "", err
+		}
 		_, err = os.Create(outFilePath)
 		if err != nil {
 			return nil, "", "", "", "", "", err
@@ -176,7 +180,7 @@ func rollDayFileCompress(wrapper *WrapperWriter, targetFileName string) error {
 	}
 	dir := val.(string)
 	fileBaseName := path.Base(targetFileName)
-	targetGzFileName := path.Join(dir, fileBaseName+".tar.gz")
+	targetGzFileName := path.Join(dir, fileBaseName+"tar.gz")
 	f, err := os.Open(targetFileName)
 	if err != nil {
 		return errors.New("out file name not found.")
