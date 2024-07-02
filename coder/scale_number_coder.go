@@ -29,6 +29,7 @@ const (
 )
 
 // region Global functions
+
 func BuildTable(tableSize int, chares ...[]rune) string {
 	totalLen := 0
 	limits := make([]int32, len(chares))
@@ -70,6 +71,7 @@ func NewScaleConvertor(table string) *ScaleNumberCoder {
 // endregion
 
 // region ScaleNumberCoder
+
 type ScaleNumberCoder struct {
 	scale     int64
 	charTable []rune

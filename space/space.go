@@ -10,6 +10,7 @@ type Space interface {
 	Set(key string, value any)
 	Has(key string) bool
 	Remove(key string)
+	Clear()
 }
 
 // region spaceData
@@ -53,6 +54,10 @@ func (s *spaceData) Remove(key string) {
 	if s.selfHas(key) {
 		s.space.Remove(key)
 	}
+}
+
+func (s *spaceData) Clear() {
+	s.space.Clear()
 }
 
 // endregion
