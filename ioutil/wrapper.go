@@ -5,22 +5,31 @@ import (
 	"github.com/bytengine-d/go-d/space"
 	"io"
 	"os"
+	"sync"
 )
 
 type WrapperWriter struct {
+	mu       sync.Mutex
 	delegate io.Writer
 	ctx      context.Context
 }
 
 func (w *WrapperWriter) Write(p []byte) (n int, err error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
 	return w.delegate.Write(p)
 }
 
 func (w *WrapperWriter) Delegate() io.Writer {
+	w.mu.Lock()
+	defer w.mu.Unlock()
 	return w.delegate
 }
 
 func (w *WrapperWriter) ChangeDelegate(writer io.Writer) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
 	w.delegate = writer
 }
 

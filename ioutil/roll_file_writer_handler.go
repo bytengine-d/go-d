@@ -125,6 +125,10 @@ func rollDayFileSetupFileWriter(wrapper *WrapperWriter) error {
 	if err != nil {
 		return err
 	}
+	old := wrapper.Delegate()
+	if closer, ok := old.(io.Closer); ok {
+		defer closer.Close()
+	}
 	wrapper.ChangeDelegate(outFile)
 	return nil
 }
@@ -159,7 +163,7 @@ func rollDayFileMoveFileName(wrapper *WrapperWriter, ep *event.EventGroup, datet
 	}
 	ext := val.(string)
 	yesterday := time.Now().AddDate(0, 0, -1).Format(datetimeFormat)
-	targetFileName := fmt.Sprintf("%s/%s-%s.%s", dir, fileBaseName, yesterday, ext)
+	targetFileName := fmt.Sprintf("%s/%s-%s%s", dir, fileBaseName, yesterday, ext)
 	err := os.Rename(filePath, targetFileName)
 	if err == nil {
 		ep.Publish(RollDayFileEventFileChange, targetFileName)
