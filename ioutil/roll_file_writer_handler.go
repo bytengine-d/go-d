@@ -184,7 +184,7 @@ func rollDayFileCompress(wrapper *WrapperWriter, targetFileName string) error {
 	}
 	dir := val.(string)
 	fileBaseName := path.Base(targetFileName)
-	targetGzFileName := path.Join(dir, fileBaseName+"tar.gz")
+	targetGzFileName := path.Join(dir, fileBaseName+".tar.gz")
 	f, err := os.Open(targetFileName)
 	if err != nil {
 		return errors.New("out file name not found.")
