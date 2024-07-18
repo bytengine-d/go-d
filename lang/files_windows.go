@@ -8,21 +8,17 @@ import (
 	"time"
 )
 
-func filetimeToTime(fi *syscall.Timespec) time.Time {
-	return time.Unix(fi.Nanoseconds()/1e9, 0)
-}
-
 func FileCreateTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Win32FileAttributeData)
-	return filetimeToTime(fileAttr.CreationTime)
+	return time.Unix(0, fileAttr.CreationTime.Nanoseconds())
 }
 
 func FileLastModifiedTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Win32FileAttributeData)
-	return filetimeToTime(fileAttr.LastWriteTime)
+	return time.Unix(0, fileAttr.LastWriteTime.Nanoseconds())
 }
 
 func FileLastAccessTime(fi os.FileInfo) time.Time {
 	fileAttr := fi.Sys().(*syscall.Win32FileAttributeData)
-	return filetimeToTime(fileAttr.LastAccessTime)
+	return time.Unix(0, fileAttr.LastAccessTime.Nanoseconds())
 }
