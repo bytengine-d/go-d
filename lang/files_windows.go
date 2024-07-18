@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func filetimeToTime(fi *syscall.Timespec) {
+func filetimeToTime(fi *syscall.Timespec) time.Time {
 	return time.Unix(fi.Nanoseconds()/1e9, 0)
 }
 
