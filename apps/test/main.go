@@ -2,23 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/bytengine-d/go-d/lang"
-	"path"
-	"path/filepath"
-	"strings"
+	"github.com/bytengine-d/go-d/apps/application"
+	"github.com/bytengine-d/go-d/logs"
+	"log"
+	"log/slog"
 )
 
 func main() {
-	fi, err := lang.RealFileInfo("apps/test/main.go")
+	ctx := application.NewAppFromArgs()
+	err := logs.SetupWithFile(ctx, logs.WeShareHandlerOptions{
+		FilePath: fmt.Sprintf("tmp/log/%s.log", application.GetAppName(ctx)),
+	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println(fi.Name())
-	fileExt := path.Ext(fi.Name())
-	fmt.Println(strings.Replace(fi.Name(), fileExt, "", -1))
-	absPath, err := filepath.Abs(fi.Name())
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(path.Dir(absPath))
+	slog.Info("app launched")
 }

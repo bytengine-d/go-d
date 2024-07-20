@@ -110,7 +110,7 @@ func obtainFileInfo(outFilePath string) (*time.Time, string, string, string, str
 }
 
 func RollDayFileSetupFileWriter(wrapper *WrapperWriter, ep *event.EventGroup) error {
-	return ep.RegisterAsyncSubscribe(RollDayFileEventFileChange, func(_ string) {
+	return ep.RegisterSubscribe(RollDayFileEventFileChange, func(_ string) {
 		_ = rollDayFileSetupFileWriter(wrapper)
 	})
 }
@@ -135,44 +135,49 @@ func rollDayFileSetupFileWriter(wrapper *WrapperWriter) error {
 
 func RollDayFileMoveFileName(datetimeFormat string) RollDayFileOption {
 	return func(wrapper *WrapperWriter, ep *event.EventGroup) error {
-		return ep.RegisterAsyncSubscribe(RollDayFileEventDayChange, func() {
+		return ep.RegisterSubscribe(RollDayFileEventDayChange, func() {
 			_ = rollDayFileMoveFileName(wrapper, ep, datetimeFormat)
 		})
 	}
 }
 
 func rollDayFileMoveFileName(wrapper *WrapperWriter, ep *event.EventGroup, datetimeFormat string) error {
-	val, has := wrapper.Get(RollDayFileOriginFileAbsPath)
-	if !has {
-		return errors.New("out file name not found.")
-	}
-	filePath := val.(string)
-	val, has = wrapper.Get(RollDayFileOriginDir)
-	if !has {
-		return errors.New("out file name not found.")
-	}
-	dir := val.(string)
-	val, has = wrapper.Get(RollDayFileOriginFileBaseName)
-	if !has {
-		return errors.New("out file name not found.")
-	}
-	fileBaseName := val.(string)
-	val, has = wrapper.Get(RollDayFileOriginFileExt)
-	if !has {
-		return errors.New("out file name not found.")
-	}
-	ext := val.(string)
-	yesterday := time.Now().AddDate(0, 0, -1).Format(datetimeFormat)
-	targetFileName := fmt.Sprintf("%s/%s-%s%s", dir, fileBaseName, yesterday, ext)
-	err := os.Rename(filePath, targetFileName)
+	targetFileName, err := _rollDayFileMoveFileName(wrapper, datetimeFormat)
 	if err == nil {
 		ep.Publish(RollDayFileEventFileChange, targetFileName)
 	}
 	return err
 }
 
+func _rollDayFileMoveFileName(wrapper *WrapperWriter, datetimeFormat string) (string, error) {
+	val, has := wrapper.Get(RollDayFileOriginFileAbsPath)
+	if !has {
+		return "", errors.New("out file name not found.")
+	}
+	filePath := val.(string)
+	val, has = wrapper.Get(RollDayFileOriginDir)
+	if !has {
+		return "", errors.New("out file name not found.")
+	}
+	dir := val.(string)
+	val, has = wrapper.Get(RollDayFileOriginFileBaseName)
+	if !has {
+		return "", errors.New("out file name not found.")
+	}
+	fileBaseName := val.(string)
+	val, has = wrapper.Get(RollDayFileOriginFileExt)
+	if !has {
+		return "", errors.New("out file name not found.")
+	}
+	ext := val.(string)
+	yesterday := time.Now().AddDate(0, 0, -1).Format(datetimeFormat)
+	targetFileName := fmt.Sprintf("%s/%s-%s%s", dir, fileBaseName, yesterday, ext)
+	err := os.Rename(filePath, targetFileName)
+	return targetFileName, err
+}
+
 func RollDayFileCompress(wrapper *WrapperWriter, ep *event.EventGroup) error {
-	return ep.RegisterAsyncSubscribe(RollDayFileEventFileChange, func(targetFileName string) {
+	return ep.RegisterSubscribe(RollDayFileEventFileChange, func(targetFileName string) {
 		_ = rollDayFileCompress(wrapper, targetFileName)
 	})
 }
