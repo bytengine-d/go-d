@@ -2,7 +2,7 @@ package logs
 
 import (
 	"context"
-	"io"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 	"log/slog"
 	"runtime"
@@ -12,17 +12,22 @@ import (
 const WeShareLogTimeFormat = "2006-01-02 15:04:05,000"
 const WeShareLogMsgFormat = "%s [%d] %-7s %s:%d.%s() - %s\n"
 
-type WeShareHandlerOptions struct {
-	SlogOpts slog.HandlerOptions
-	FilePath string
+type HandlerOptions struct {
+	SlogOpts   slog.HandlerOptions
+	FilePath   string
+	MaxSize    int
+	MaxAge     int
+	MaxBackups int
+	LocalTime  bool
+	Compress   bool
 }
 
-type WeShareHandler struct {
+type Handler struct {
 	slog.Handler
 	l *log.Logger
 }
 
-func (h *WeShareHandler) Handle(ctx context.Context, r slog.Record) error {
+func (h *Handler) Handle(ctx context.Context, r slog.Record) error {
 	timeVal := r.Time.Format(WeShareLogTimeFormat)
 	goid := runtime.NumGoroutine()
 	upperLevel := strings.ToUpper(r.Level.String())
@@ -44,13 +49,20 @@ func (h *WeShareHandler) Handle(ctx context.Context, r slog.Record) error {
 	return nil
 }
 
-func NewWeShareHandler(
-	out io.Writer,
-	opts WeShareHandlerOptions,
+func NewHandler(
+	opts HandlerOptions,
 ) slog.Handler {
-	h := &WeShareHandler{
-		Handler: slog.NewTextHandler(out, &opts.SlogOpts),
-		l:       log.New(out, "", 0),
+	l := &lumberjack.Logger{
+		Filename:   opts.FilePath,
+		MaxSize:    opts.MaxSize, // megabytes
+		MaxAge:     opts.MaxAge,  //days
+		MaxBackups: opts.MaxBackups,
+		LocalTime:  opts.LocalTime,
+		Compress:   opts.Compress, // disabled by default
+	}
+	h := &Handler{
+		Handler: slog.NewTextHandler(l, &opts.SlogOpts),
+		l:       log.New(l, "", 0),
 	}
 	return h
 }

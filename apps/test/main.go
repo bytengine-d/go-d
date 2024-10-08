@@ -10,7 +10,7 @@ import (
 
 func main() {
 	ctx := application.NewAppFromArgs()
-	err := logs.SetupWithFile(ctx, logs.WeShareHandlerOptions{
+	err := logs.SetupWithFile(ctx, logs.HandlerOptions{
 		FilePath: fmt.Sprintf("tmp/log/%s.log", application.GetAppName(ctx)),
 	})
 	if err != nil {

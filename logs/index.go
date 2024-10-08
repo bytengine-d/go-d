@@ -12,19 +12,19 @@ var rootWrapperWriter *ioutil.WrapperWriter
 
 func SetupStd(ctx context.Context, slogOpts slog.HandlerOptions) {
 	rootWrapperWriter = ioutil.NewWrapperWithStdio(ctx)
-	root = slog.New(NewWeShareHandler(rootWrapperWriter, WeShareHandlerOptions{
+	root = slog.New(NewHandler(rootWrapperWriter, HandlerOptions{
 		SlogOpts: slogOpts,
 	}))
 	slog.SetDefault(root)
 }
 
-func SetupWithFile(ctx context.Context, slogOpts WeShareHandlerOptions) error {
+func SetupWithFile(ctx context.Context, slogOpts HandlerOptions) error {
 	var err error
 	rootWrapperWriter, err = ioutil.NewWrapperWithHandler(ctx, ioutil.DefaultRollDay(slogOpts.FilePath))
 	if err != nil {
 		return err
 	}
-	root = slog.New(NewWeShareHandler(rootWrapperWriter, slogOpts))
+	root = slog.New(NewHandler(rootWrapperWriter, slogOpts))
 	slog.SetDefault(root)
 	return nil
 }

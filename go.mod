@@ -6,3 +6,5 @@ require (
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/orcaman/concurrent-map/v2 v2.0.1
 )
+
+require gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
